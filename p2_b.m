@@ -40,89 +40,56 @@ clear all
 close all
 clc
 
-% Nomes das colunas
+% Nomes das colunas para referência
 columns_names = {'Outcome', 'Patient Age', 'Gender', ...
                  'Ventilated (Y/N)', 'Red blood cell distribution width', ...
                  'Monocytes(%)', 'White blood cell count', ...
                  'Platelet Count', 'Lymphocyte Count', ...
                  'Neutrophils Count', 'Days Hospitalized'};
 
-% Carregar os dados
-data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0);  % Pulando o cabeçalho (1 linha)
+% Leitura dos dados
+data = csvread('COVID-19_CBC_Data_cleaned.csv');
 
-% Separar a coluna do desfecho (Outcome) e as variáveis independentes
-outcome = data(:, 1);  % Coluna "Outcome"
-variables = data(:, 2:end);  % Todas as variáveis exceto o Outcome
-num_vars = size(variables, 2);
+% Removendo a primeira linha que contém strings dos títulos
+data(1, :) = [];
 
-% Inicializar vetor de correlações
-correlations = zeros(num_vars, 1);
+% Seleção do par de variáveis "Lymphocyte Count" (coluna 9) e "Neutrophils Count" (coluna 10)
+xi = data(:, 9); % Lymphocyte Count
+yi = data(:, 10); % Neutrophils Count
 
-% Calcular a correlação de cada variável com o desfecho
-for i = 1:num_vars
-    correlations(i) = corr(outcome, variables(:, i));
-end
-
-%REGRESSÃO COM LINFOCITO E NEUTRÓFILOS
-
-xi1 = data(:,9);
-yi1 = data(:,10);
-
-plot(xi1, yi1, 'o')
+% Plota um gráfico de dispersão dos dados (pontos)
+plot(xi, yi, 'o')
+xlim([0, max(xi) * 1.1]) % ajuste do limite no eixo x (margem de 10%)
+ylim([0, max(yi) * 1.1]) % ajuste do limite no eixo y (margem de 10%)
 grid on
-xlabel('linfócito')
-ylabel('neutrófilo')
+xlabel('Quantidade de Linfoócito')
+ylabel('Quantidade de Neutrófilo')
 
-# MMQ
-n = length(xi1);
+% Cálculo dos parâmetros da regressão linear
+% Para encontrar a reta de regressão y=a0 + a1x, precisamos determinar os coeficientes a0 (intercepto) e a1 (inclinação)
+n = length(xi); % Número de pontos de dados (número de pacientes)
 
-##a1 = (n*xi*yi' - sum(xi)*sum(yi))/(n*sum(xi.^2)-(sum(xi)^2))
-a11 = (n*sum(xi1.*yi1) - sum(xi1)*sum(yi1))/(n*sum(xi1.^2)-(sum(xi1)^2));
-a01 = mean(yi1) - a11*mean(xi1);
+% Cálculo de a1 aplicando o método de mínimos quadrados, que minimiza a soma dos erros ao quadrado entre os pontos e a reta de ajuste
+a1 = (n * sum(xi .* yi) - sum(xi) * sum(yi)) / (n * sum(xi .^ 2) - (sum(xi) ^ 2));
+% Cálculo de a0 garantindo que a linha de regressão é centralizada nos dados e minimiza a distância total entre a linha e os pontos
+a0 = mean(yi) - a1 * mean(xi);
 
-hold on
-plot(xi1, a11*xi1+a01, 'r')
+% Exibir a reta de regressão
+hold on % Mantém o gráfico de dispersão existente para sobrepor a reta de regressão
+plot(xi, a1 * xi + a0, 'r') # Plota a reta de regressão em vermelho ('r')
+title('Regressão Linear de qunatidade de linfoócito versus quantidade de neutroófilo')
 
-St1 = sum((yi1 - mean(yi1)).^2);
-Sr1 = sum((yi1-(a01+a11*xi1)).^2);
-r21 = (St1-Sr1)/St1;
-s_yx1 = sqrt(Sr1/(n-2));
-s_y1 = sqrt(St1/(n-1));
+% Cálculo dos erros e coeficiente de determinação
+St = sum((yi - mean(yi)) .^ 2);  % Soma total dos quadrados
+Sr = sum((yi - (a0 + a1 * xi)) .^ 2);  % Soma dos quadrados dos resíduos
+r2 = (St - Sr) / St;  % Coeficiente de determinação R²
+s_yx = sqrt(Sr / (n - 2));  % Erro padrão da estimativa
+s_y = sqrt(St / (n - 1));  % Desvio padrão de yi
 
-fprintf('Soma total dos quadrados teste 1:%d',St1);
-fprintf('\nSoma dos quadrados de resíduo teste 1: %d', Sr1);
-fprintf('\nCoeficienre de determinação teste 1: %d', r21);
-fprintf('\nErro padrão da estimativa teste 1: %d', s_yx1);
-fprintf('\nDesvio padrão de y teste 1: %d', s_y1);
+% Exibir resultados
+fprintf('Coeficientes da regressão: a0 = %.4f, a1 = %.4f\n', a0, a1);
+fprintf('Coeficiente de determinação R²: %.4f\n', r2);
+fprintf('Erro padrão da estimativa (s_yx): %.4f\n', s_yx);
+fprintf('Desvio padrão de yi (s_y): %.4f\n', s_y);
 
-%REGRESSÃO LINEAR PLAQUETAS E DIAS
 
-xi2 = data(:,11);
-yi2 = data(:,8);
-
-plot(xi2, yi2, 'o')
-grid on
-xlabel('dias hospitalizados')
-ylabel('plaquetas')
-
-# MMQ
-n = length(xi2);
-
-##a1 = (n*xi*yi' - sum(xi)*sum(yi))/(n*sum(xi.^2)-(sum(xi)^2))
-a12 = (n*sum(xi2.*yi2) - sum(xi2)*sum(yi2))/(n*sum(xi2.^2)-(sum(xi2)^2));
-a02 = mean(yi2) - a12*mean(xi2);
-
-hold on
-plot(xi2, a12*xi2+a02, 'r')
-
-St2 = sum((yi2 - mean(yi2)).^2);
-Sr2 = sum((yi2-(a02+a12*xi2)).^2);
-r22 = (St2-Sr2)/St2;
-s_yx2 = sqrt(Sr2/(n-2));
-s_y2 = sqrt(St2/(n-1));
-
-fprintf('Soma total dos quadrados teste 2:%d',St2);
-fprintf('\nSoma dos quadrados de resíduo teste 2: %d', Sr2);
-fprintf('\nCoeficienre de determinação teste 2: %d', r22);
-fprintf('\nErro padrão da estimativa teste 2: %d', s_yx2);
-fprintf('\nDesvio padrão de y teste 2: %d', s_y2);
