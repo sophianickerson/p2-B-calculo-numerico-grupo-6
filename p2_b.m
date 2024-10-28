@@ -57,29 +57,41 @@ data(1, :) = [];
 xi = data(:, 9); % Lymphocyte Count
 yi = data(:, 10); % Neutrophils Count
 
-% Plota um gráfico de dispersão dos dados (pontos)
-plot(xi, yi, 'o')
-xlim([0, max(xi) * 1.1]) % ajuste do limite no eixo x (margem de 10%)
-ylim([0, max(yi) * 1.1]) % ajuste do limite no eixo y (margem de 10%)
-grid on
-xlabel('Quantidade de Linfoócito')
-ylabel('Quantidade de Neutrófilo')
+% ---------- Gráfico 1: Dispersão dos Dados ----------
 
-% Cálculo dos parâmetros da regressão linear
-% Para encontrar a reta de regressão y=a0 + a1x, precisamos determinar os coeficientes a0 (intercepto) e a1 (inclinação)
+figure; % Abre uma nova figura para o gráfico de dispersão
+plot(xi, yi, 'o')
+xlim([0, max(xi) * 1.1]) % Ajuste do limite no eixo x (margem de 10%)
+ylim([0, max(yi) * 1.1]) % Ajuste do limite no eixo y (margem de 10%)
+grid on
+xlabel('Quantidade de Linfócito')
+ylabel('Quantidade de Neutrófilo')
+title('Dispersão de Linfócitos vs Neutrófilos')
+
+% ---------- Cálculo da Regressão Linear ----------
+
 n = length(xi); % Número de pontos de dados (número de pacientes)
 
-% Cálculo de a1 aplicando o método de mínimos quadrados, que minimiza a soma dos erros ao quadrado entre os pontos e a reta de ajuste
+% Cálculo de a1 e a0
 a1 = (n * sum(xi .* yi) - sum(xi) * sum(yi)) / (n * sum(xi .^ 2) - (sum(xi) ^ 2));
-% Cálculo de a0 garantindo que a linha de regressão é centralizada nos dados e minimiza a distância total entre a linha e os pontos
 a0 = mean(yi) - a1 * mean(xi);
 
-% Exibir a reta de regressão
-hold on % Mantém o gráfico de dispersão existente para sobrepor a reta de regressão
-plot(xi, a1 * xi + a0, 'r') # Plota a reta de regressão em vermelho ('r')
-title('Regressão Linear de qunatidade de linfoócito versus quantidade de neutroófilo')
+% ---------- Gráfico 2: Reta de Regressão ----------
 
-% Cálculo dos erros e coeficiente de determinação
+figure; % Abre uma nova figura para o gráfico com a reta de regressão
+plot(xi, yi, 'o') % Gráfico de dispersão
+hold on
+plot(xi, a1 * xi + a0, 'r') % Plota a reta de regressão em vermelho
+xlim([0, max(xi) * 1.1]) % Ajuste do limite no eixo x
+ylim([0, max(yi) * 1.1]) % Ajuste do limite no eixo y
+xlabel('Quantidade de Linfócito')
+ylabel('Quantidade de Neutrófilo')
+title('Regressão Linear de Linfócitos vs Neutrófilos')
+grid on
+hold off
+
+% ---------- Cálculo dos Erros e Coeficiente de Determinação ----------
+
 St = sum((yi - mean(yi)) .^ 2);  % Soma total dos quadrados
 Sr = sum((yi - (a0 + a1 * xi)) .^ 2);  % Soma dos quadrados dos resíduos
 r2 = (St - Sr) / St;  % Coeficiente de determinação R²
@@ -91,5 +103,3 @@ fprintf('Coeficientes da regressão: a0 = %.4f, a1 = %.4f\n', a0, a1);
 fprintf('Coeficiente de determinação R²: %.4f\n', r2);
 fprintf('Erro padrão da estimativa (s_yx): %.4f\n', s_yx);
 fprintf('Desvio padrão de yi (s_y): %.4f\n', s_y);
-
-
