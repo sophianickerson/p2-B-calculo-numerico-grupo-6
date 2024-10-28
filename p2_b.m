@@ -281,9 +281,6 @@ R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
 fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
 
 #2.2
-clear all
-close all
-clc
 
 columns_names = {'Outcome', 'Patient Age', 'Gender', ...
                  'Ventilated (Y/N)', 'Red blood cell distribution width', ...
