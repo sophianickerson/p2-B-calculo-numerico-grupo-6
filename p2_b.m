@@ -34,6 +34,8 @@ for ii = 2:num_columns-1
 end
 
 ### início do código da prova (fique à vontade para comentar o código de plots dos scatters)
+### 1.1
+### Essas duas duplas (Linfócitos vs. Neutrófilos e Plaquetas vs. Dias Hospitalizado) foram escolhidas pela observação de uma distribuição com padrões lineares visíveis. Isso é indicativo de que esses pares podem apresentar um ajuste razoável para a regressão linear, com os dados distribuídos de forma a sugerir uma relação direta entre as variáveis. Essa análise inicial ajuda a justificar a escolha antes de partir para o cálculo de regressão linear. Linfócitos vs. Neutrófilos: Na análise gráfica, observamos que há uma relação visualmente mais próxima de linearidade entre as variáveis "Linfócitos" e "Neutrófilos". Esses dois parâmetros sanguíneos estão relacionados entre si na resposta inflamatória e no sistema imunológico, o que é frequentemente esperado em pacientes com doenças infecciosas como a COVID-19. O gráfico de dispersão entre essas variáveis mostra uma tendência de variação conjunta, sugerindo que podem ser bons candidatos para a regressão linear. Plaquetas vs. Dias Hospitalizado: Outro par com uma tendência linear notável é o de "Plaquetas" e "Dias Hospitalizado". A contagem de plaquetas e a duração da internação podem ter uma correlação relacionada à gravidade do quadro clínico. Pacientes com contagens de plaquetas alteradas podem apresentar diferentes tempos de recuperação, refletindo na duração da hospitalização. A relação, apesar de não ser tão forte quanto o primeiro par, ainda sugere uma tendência que pode ser modelada por regressão linear.
 ### 1.2
 
 clear all
@@ -168,3 +170,333 @@ if s_yx_1 > s_yx_2
   else
     fprintf('O modelo de regressão de Linfócitos vs Neutrófilos é melhor que o moedelo de regressão de Plaqueta vs Dias Hospitalizado!\n')
  end
+
+### 2.1 
+# Primeiramente, tinha-se o objetivo de comparar diferentes faixas etárias à quantidade de células sanguíneas do paciente.
+# Para isso, comparou-se a média de leucócitos, linfócitos e neutrófilos em 3 faixas etárias (0-40, 40-60 e 60+) anos.
+# Para uma melhor visualização, utilizou-se gráficos de barras e lineares.
+# segue o código
+
+# REGRESSÃO LINEAR
+# Consideramos interessante avaliar a relação entre a quantidade de células sanguíneas por paciente com a taxa de mortalidade
+# Para isso foi realizada uma regressão linear, considerando os coeficientes de regressão e o coeficiente de correlação
+# Segue o código:
+
+% LEUCÓCITOS X OUTCOME
+
+% Definir as variáveis x e y
+x = data(:, 7);       % White blood cell count
+y = data(:, 1);       % Outcome
+
+% Cálculo das médias de x e y
+x_mean = mean(x);
+y_mean = mean(y);
+
+% Cálculo do coeficiente de inclinação (beta1) e do intercepto (beta0) manualmente
+numerator_beta1 = sum((x - x_mean) .* (y - y_mean));
+denominator_beta1 = sum((x - x_mean).^2);
+beta1 = numerator_beta1 / denominator_beta1;
+
+% Intercepto beta0
+beta0 = y_mean - beta1 * x_mean;
+
+% Resultados da regressão leucócitos
+fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
+
+% Valores preditos (y_hat) usando a equação de regressão
+y_hat = beta0 + beta1 * x;
+
+% Cálculo do R² pelos erros
+SSE = sum((y - y_hat).^2);         % Soma dos Erros ao Quadrado
+SST = sum((y - y_mean).^2);        % Soma Total dos Quadrados
+R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
+
+% Exibir o coeficiente de determinação (R²)
+fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
+
+
+# LINFÓCITOS X OUTCOME
+
+# Definir as variáveis x e y
+x = data(:, 9);       # White blood cell count
+y = data(:, 1);       # Outcome
+
+# Cálculo das médias de x e y
+x_mean = mean(x);
+y_mean = mean(y);
+
+# Cálculo do coeficiente de inclinação (beta1) e do intercepto (beta0) manualmente
+numerator_beta1 = sum((x - x_mean) .* (y - y_mean));
+denominator_beta1 = sum((x - x_mean).^2);
+beta1 = numerator_beta1 / denominator_beta1;
+
+# Intercepto beta0
+beta0 = y_mean - beta1 * x_mean;
+
+# resultados da regressão linfócitos
+fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
+
+% Valores preditos (y_hat) usando a equação de regressão
+y_hat = beta0 + beta1 * x;
+
+% Cálculo do R² pelos erros
+SSE = sum((y - y_hat).^2);         % Soma dos Erros ao Quadrado
+SST = sum((y - y_mean).^2);        % Soma Total dos Quadrados
+R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
+
+% Exibir o coeficiente de determinação (R²)
+fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
+
+
+# NEUTRÓFILOS X OUTCOME
+
+# Definir as variáveis x e y
+x = data(:, 10);       # White blood cell count
+y = data(:, 1);        # Outcome
+
+# Cálculo das médias de x e y
+x_mean = mean(x);
+y_mean = mean(y);
+
+# Cálculo do coeficiente de inclinação (beta1) e do intercepto (beta0) manualmente
+numerator_beta1 = sum((x - x_mean) .* (y - y_mean));
+denominator_beta1 = sum((x - x_mean).^2);
+beta1 = numerator_beta1 / denominator_beta1;
+
+# Intercepto beta0
+beta0 = y_mean - beta1 * x_mean;
+
+# resultados da regressão neutrófilos
+fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
+
+% Valores preditos (y_hat) usando a equação de regressão
+y_hat = beta0 + beta1 * x;
+
+% Cálculo do R² pelos erros
+SSE = sum((y - y_hat).^2);         % Soma dos Erros ao Quadrado
+SST = sum((y - y_mean).^2);        % Soma Total dos Quadrados
+R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
+
+% Exibir o coeficiente de determinação (R²)
+fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
+
+#2.2
+clear all
+close all
+clc
+
+columns_names = {'Outcome', 'Patient Age', 'Gender', ...
+                 'Ventilated (Y/N)', 'Red blood cell distribution width', ...
+                 'Monocytes(%)', 'White blood cell count', ...
+                 'Platelet Count', 'Lymphocyte Count', ...,
+                 'Neutrophils Count', 'Days Hospitalized'};
+
+data = csvread('COVID-19_CBC_Data_cleaned.csv');
+
+# removendo a linha com strings dos títulos
+data(1, :) = [];
+
+% Definir faixas etárias
+age_groups = {[0, 40], [40, 60], [60, Inf]};
+group_labels = {'0-40', '40-60', '60+'};
+
+% Índices das colunas
+age_column = 2;
+wbc_column = 7;
+neutrophils_column = 10;
+lymphocyte_column = 9;
+
+% HISTOGRAMA DE GLÓBULOS BRANCOS x FAIXA ETÁRIA
+figure;
+for i = 1:length(age_groups)
+    age_range = age_groups{i};
+    age_filter = data(:, age_column) >= age_range(1) & data(:, age_column) < age_range(2);
+    wbc_data = data(age_filter, wbc_column);
+    subplot(3, 1, i);
+    hist(wbc_data, 10);  % Ajuste o número de bins conforme necessário
+    title(['Contagem de Glóbulos Brancos - Faixa Etária' group_labels{i}]);
+    xlabel('Contagem de Glóbulos Brancos');
+    ylabel('Frequência');
+end
+
+% HISTOGRAMA DE NEUTRÓFILOS x FAIXA ETÁRIA
+figure;
+for i = 1:length(age_groups)
+    age_range = age_groups{i};
+    age_filter = data(:, age_column) >= age_range(1) & data(:, age_column) < age_range(2);
+    neutrophils_data = data(age_filter, neutrophils_column);
+    subplot(3, 1, i);
+    hist(neutrophils_data, 10);  % Ajuste o número de bins conforme necessário
+    title(['Contagem de Neutrófilos - Faixa Etária' group_labels{i}]);
+    xlabel('Contagem de Neutrófilos');
+    ylabel('Frequência');
+end
+
+% HISTOGRAMA DE LINFÓCITOS x FAIXA ETÁRIA
+figure;
+for i = 1:length(age_groups)
+    age_range = age_groups{i};
+    age_filter = data(:, age_column) >= age_range(1) & data(:, age_column) < age_range(2);
+    lymphocyte_data = data(age_filter, lymphocyte_column);
+    subplot(3, 1, i);
+    hist(lymphocyte_data, 10);  % Ajuste o número de bins conforme necessário
+    title(['Contagem de Linfócitos - Faixa Etária' group_labels{i}]);
+    xlabel('Contagem de Linfócitos');
+    ylabel('Frequência');
+end
+
+
+% HISTOGRAMA DE OUTCOME POR FAIXA ETÁRIA
+
+% Índices das colunas relevantes
+outcome_column = 1;
+age_column = 2;
+
+figure;
+for i = 1:length(age_groups)
+    age_range = age_groups{i};
+    age_filter = data(:, age_column) >= age_range(1) & data(:, age_column) < age_range(2);
+    outcome_data = data(age_filter, outcome_column);
+
+    % Contar recuperados (1) e não recuperados (0) na faixa etária
+    num_recovered = sum(outcome_data == 1);
+    num_not_recovered = sum(outcome_data == 0);
+
+    % Dados para o histograma de barras
+    bar_data = [num_not_recovered, num_recovered];
+    subplot(3, 1, i);
+    bar([0, 1], bar_data);
+
+    title(['Outcome - Age Group ' group_labels{i}]);
+    xlabel('Outcome (0: Not Recovered, 1: Recovered)');
+    ylabel('Frequency');
+    xticks([0 1]);
+end
+
+# CONSIDERAÇÕES FINAIS: Anlisando os coeficientes de correlação da regressão linear e multipla, fica claro que quase não há relação entre a taxa de mortalidade e a quantidade de células sanguíneas por paciente
+# OBS: para melhor visualização, gostaria de ter feito gráficos de violino, entretanto encontrei dificuldades de instalar essa função para o octave, logo me limitei a gráficos lineares e de barra.
+
+% Análise 3
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%3.1. Fazendo dois modelos de regressão linear, onde o modelo 𝑦1 = 𝑎0,1 + 𝑎1,1𝑥1 e outro 𝑦2 = 𝑎0,2 + 𝑎1,2𝑥2, onde 𝑥1 e 𝑥2 são variáveis
+%que melhor preveem os dias hospitalizados
+
+% Carregando os dados
+data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorar cabeçalho
+dias_hospitalizados = data(:, 11); % Coluna de dias hospitalizados
+
+% Selecionando variáveis independentes (ajustável conforme as variáveis mais correlacionadas)
+x1 = data(:, 9); % Contagem de linfócitos
+x2 = data(:, 10); % Contagem de neutrófilos
+
+% Função para calcular os coeficientes de um modelo linear simples y = a0 + a1*x
+function [a0, a1] = regressao_linear(x, y)
+    n = length(x);
+    x_mean = mean(x);
+    y_mean = mean(y);
+    a1 = sum((x - x_mean) .* (y - y_mean)) / sum((x - x_mean).^2);
+    a0 = y_mean - a1 * x_mean;
+end
+
+% Modelo 1: y1 = a0,1 + a1,1 * x1
+[a0_1, a1_1] = regressao_linear(x1, dias_hospitalizados);
+y1_pred = a0_1 + a1_1 * x1;
+
+% Modelo 2: y2 = a0,2 + a1,2 * x2
+[a0_2, a1_2] = regressao_linear(x2, dias_hospitalizados);
+y2_pred = a0_2 + a1_2 * x2;
+
+% Função para calcular Sr, r^2, Sy/x e Sy
+function [Sr, r2, Sy_x, S_y] = calcular_metricas(y_true, y_pred)
+    Sr = sum((y_true - y_pred).^2);
+    St = sum((y_true - mean(y_true)).^2);
+    r2 = 1 - (Sr / St);
+    Sy_x = sqrt(Sr / (length(y_true) - 2));
+    S_y = sqrt(St/(length(y_true) -1))
+end
+
+% Calcular métricas para o Modelo 1
+[Sr1, r2_1, Sy_x1, S_y1] = calcular_metricas(dias_hospitalizados, y1_pred);
+
+% Calcular métricas para o Modelo 2
+[Sr2, r2_2, Sy_x2, S_y2] = calcular_metricas(dias_hospitalizados, y2_pred);
+
+% Exibindo os resultados
+fprintf('Modelo 1 (y1 = a0,1 + a1,1 * x1): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr1, r2_1, Sy_x1, S_y1);
+fprintf('Modelo 2 (y2 = a0,2 + a1,2 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr2, r2_2, Sy_x2, S_y2);
+
+% Comparando as métricas de cada modelo com base em Sy/x e Sy
+
+if Sy_x1 < S_y1
+  fprintf('O modelo apresenta boa correlação. (Sy/x < Sy)\n');
+else
+  fprintf('O modelo não apresenta boa correlação. (Sy/x < Sy)\n');
+end
+
+
+% Comparando os modelos com base no r2
+if r2_1 > r2_2 
+  fprintf('O Modelo 1 é melhor com base em r^2.\n');
+  elseif r2_2 > r2_1
+    fprintf('O Modelo 2 é melhor com base em r^2.\n');
+  elseif Sy_x1> Sy_x2
+    fprintf('O Modelo 2 é melhor com base em Sy/x.\n')
+  elseif Sy_x1< Sy_x2
+    fprintf('O Modelo 1 é melhor com base em Sy/x.\n')
+  else
+    fprintf('Ambos os modelos têm desempenho semelhante.\n');
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%3.2. Implementando um terceiro modelo de regressão linear que combine as duas anteriores
+
+% Carregar os dados
+data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorando cabeçalho
+dias_hospitalizados = data(:, 11); % Coluna de dias hospitalizados
+
+% Selecionar variáveis independentes
+x1 = data(:, 9); % Contagem de linfócitos
+x2 = data(:, 10); % Contagem de neutrófilos
+
+% Modelo 3: Regressão linear múltipla y3 = a0,3 + a1,3 * x1 + a2,3 * x2
+function [a0, a1, a2] = regressao_linear_multipla(x1, x2, y)
+
+    % Montando a matriz de design com uma coluna de 1's para o termo independente
+    X = [ones(length(x1), 1), x1, x2];
+
+    % Resolvendo para os coeficientes usando a pseudo-inversa
+    a = pinv(X' * X) * X' * y;
+    a0 = a(1);
+    a1 = a(2);
+    a2 = a(3);
+end
+
+% Calcular os coeficientes para o Modelo 3
+[a0_3, a1_3, a2_3] = regressao_linear_multipla(x1, x2, dias_hospitalizados);
+y3_pred = a0_3 + a1_3 * x1 + a2_3 * x2;
+
+% Função para calcular Sr, r^2 e Sy/x (já implementada)
+function [Sr, r2, Sy_x] = calcular_metricas(y_true, y_pred)
+    Sr = sum((y_true - y_pred).^2);
+    St = sum((y_true - mean(y_true)).^2);
+    r2 = 1 - (Sr / St);
+    Sy_x = sqrt(Sr / (length(y_true) - 2));
+end
+
+% Calcular métricas para o Modelo 3
+[Sr3, r2_3, Sy_x3] = calcular_metricas(dias_hospitalizados, y3_pred);
+
+% Exibir resultados do Modelo 3
+fprintf('Modelo 3 (y3 = a0,3 + a1,3 * x1 + a2,3 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr3, r2_3, Sy_x3);
+
+% Comparação dos modelos
+if r2_3 > max([r2_1, r2_2])
+    fprintf('O Modelo 3 é o melhor com base em r^2.\n');
+  elseif r2_1 > r2_2
+    fprintf('O Modelo 1 ainda é melhor com base em r^2.\n');
+  else
+    fprintf('O Modelo 2 ainda é melhor com base em r^2.\n');
+end
