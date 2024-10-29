@@ -380,7 +380,7 @@ data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorar cabeçalho
 dias_hospitalizados = data(:, 11); % Coluna de dias hospitalizados
 
 % Selecionando variáveis independentes (ajustável conforme as variáveis mais correlacionadas)
-x1 = data(:, 9); % Contagem de linfócitos
+x1 = data(:, 8); % Contagem de plaqueta
 x2 = data(:, 10); % Contagem de neutrófilos
 
 % Função para calcular os coeficientes de um modelo linear simples y = a0 + a1*x
@@ -449,7 +449,7 @@ end
 % Carregar os dados
 data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorar cabeçalho
 y = data(:, 11); % Variável dependente: dias hospitalizados
-x1 = data(:, 9); % Variável independente 1: contagem de linfócitos
+x1 = data(:, 8); % Variável independente 1: contagem de plaquetas
 x2 = data(:, 10); % Variável independente 2: contagem de neutrófilos
 
 % Calcular os termos necessários para montar o sistema linear
