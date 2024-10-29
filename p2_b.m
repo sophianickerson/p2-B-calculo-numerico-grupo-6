@@ -513,8 +513,3 @@ Sy_x = sqrt(Sr / (n - 3));
 % Exibir os resultados do modelo ajustado
 fprintf('Modelo de regressão múltipla (usando Eliminação de Gauss): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr, r2, Sy_x);
 
-
-    fprintf('O Modelo 1 ainda é melhor com base em r^2.\n');
-  else
-    fprintf('O Modelo 2 ainda é melhor com base em r^2.\n');
-end
