@@ -660,3 +660,7 @@ elseif r2_1 > r2_2
 else
     fprintf('O Modelo 2 ainda é melhor com base em r^2.\n');
 end
+
+% 3.3
+fprintf('\n--- 3.3 ---\n');
+fprintf('\n--- De acordo com o ponto 3.1, o modelo, apesar de ser bom para o exercício, não é suficientemente bom para um modelo preditivo. Isso porque o ajuste não é muito bom, com R2= 0,25. Dessa maneira, não é possível prever a quantidade de dias que o paciente ficará hospitalizado ao olhar a quantidade de plaquetas. ---\n');
