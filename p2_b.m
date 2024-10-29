@@ -208,38 +208,82 @@ R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
 fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
 
 
-# LINFÓCITOS X OUTCOME
+# LEUCÓCITOS X OUTCOME
 
-# Definir as variáveis x e y
-x = data(:, 9);       # White blood cell count
-y = data(:, 1);       # Outcome
+xi_3 = data(:, 7); % leucócitos
+yi_3 = data(:, 1); % outcome
 
-# Cálculo das médias de x e y
-x_mean = mean(x);
-y_mean = mean(y);
+% ---------- Gráfico 1: Dispersão dos Dados ----------
+figure; % Abre uma nova figura para o gráfico de dispersão
+plot(xi_3, yi_3, 'o')
+xlim([0, max(xi_3) * 1.1]) % Ajuste do limite no eixo x (margem de 10%)
+ylim([0, max(yi_3) * 1.1]) % Ajuste do limite no eixo y (margem de 10%)
+grid on
+xlabel('Quantidade de Leucócitos')
+ylabel('Outcome')
+title('Dispersão de Leucócitos vs Outcome')
 
-# Cálculo do coeficiente de inclinação (beta1) e do intercepto (beta0) manualmente
-numerator_beta1 = sum((x - x_mean) .* (y - y_mean));
-denominator_beta1 = sum((x - x_mean).^2);
-beta1 = numerator_beta1 / denominator_beta1;
+% ---------- Regressão Polinomial (Grau 3) ----------
+n_3 = length(xi_3); % Número de pontos de dados (número de pacientes)
 
-# Intercepto beta0
-beta0 = y_mean - beta1 * x_mean;
+% Montar a matriz de design para polinômio de grau 3: [1, x, x^2, x^3]
+X_3 = [ones(n_3, 1), xi_3, xi_3 .^ 2, xi_3 .^ 3];
 
-# resultados da regressão linfócitos
-fprintf('\n--- Resultados da regressão linfócitos ---\n');
-fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
+% Resolver o sistema X * beta = y usando decomposição LU
+XtX_3 = X_3' * X_3;
+Xty_3 = X_3' * yi_3;
+[L, U] = lu(XtX_3);
 
-% Valores preditos (y_hat) usando a equação de regressão
-y_hat = beta0 + beta1 * x;
+% Resolve o sistema Lz = Xty
+z_3 = L \ Xty_3;
 
-% Cálculo do R² pelos erros
-SSE = sum((y - y_hat).^2);         % Soma dos Erros ao Quadrado
-SST = sum((y - y_mean).^2);        % Soma Total dos Quadrados
-R2 = 1 - (SSE / SST);              % Coeficiente de determinação (R²)
+% Resolve o sistema Ubeta = z para obter os coeficientes beta
+beta_3 = U \ z_3;
 
-% Exibir o coeficiente de determinação (R²)
-fprintf("Coeficiente de determinação (R²): %.4f\n", R2);
+% Coeficientes da regressão polinomial
+a0_3 = beta_3(1);
+a1_3 = beta_3(2);
+a2_3 = beta_3(3);
+a3_3 = beta_3(4);
+
+% ---------- Gráfico 2: Curva de Regressão Polinomial ----------
+xi_3_sorted = sort(xi_3); % Organizar os valores de x para um gráfico mais suave
+yi_3_pred = a0_3 + a1_3 * xi_3_sorted + a2_3 * (xi_3_sorted .^ 2) + a3_3 * (xi_3_sorted .^ 3);
+
+figure; % Abre uma nova figura para o gráfico da regressão
+plot(xi_3, yi_3, 'o') % Gráfico de dispersão dos dados originais
+hold on
+plot(xi_3_sorted, yi_3_pred, 'r-', 'LineWidth', 2) % Plota a curva de regressão em vermelho
+xlim([0, max(xi_3) * 1.1]) % Ajuste do limite no eixo x (margem de 10%)
+ylim([0, max(yi_3) * 1.1]) % Ajuste do limite no eixo y (margem de 10%)
+xlabel('Quantidade de Leucócitos')
+ylabel('Outcome')
+title('Regressão Polinomial (Grau 3) de Leucócitos vs Outcome')
+grid on
+hold off
+
+% ---------- Cálculo dos Erros e Coeficiente de Determinação ----------
+yi_3_fitted = a0_3 + a1_3 * xi_3 + a2_3 * (xi_3 .^ 2) + a3_3 * (xi_3 .^ 3);
+St_3 = sum((yi_3 - mean(yi_3)) .^ 2);  % Soma total dos quadrados
+Sr_3 = sum((yi_3 - yi_3_fitted) .^ 2);  % Soma dos quadrados dos resíduos
+r2_3 = 1 - (Sr_3 / St_3);  % Coeficiente de determinação R²
+s_yx_3 = sqrt(Sr_3 / (n_3 - 4));  % Erro padrão da estimativa (ajustado para grau 3)
+s_y_3 = sqrt(St_3 / (n_3 - 1));  % Desvio padrão de yi
+
+% Resultados para Leucócitos vs Outcome (Regressão Polinomial)
+fprintf('\n--- Resultados da Regressão Polinomial (Grau 3): Leucócitos vs Outcome ---\n');
+fprintf('  Coeficiente a0               = %10.4f\n', a0_3);
+fprintf('  Coeficiente a1               = %10.4f\n', a1_3);
+fprintf('  Coeficiente a2               = %10.4f\n', a2_3);
+fprintf('  Coeficiente a3               = %10.4f\n', a3_3);
+fprintf('  Coeficiente de determinação (R²) = %10.4f\n', r2_3);
+fprintf('  Erro padrão da estimativa (s_yx) = %10.4f\n', s_yx_3);
+fprintf('  Desvio padrão de yi (s_y)    = %10.4f\n', s_y_3);
+if s_yx_3 < s_y_3
+    fprintf('  >> O modelo de regressão polinomial é bom!\n');
+else
+    fprintf('  >> O modelo de regressão polinomial não é bom\n');
+end
 
 
 # NEUTRÓFILOS X OUTCOME
