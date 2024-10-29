@@ -65,8 +65,8 @@ a0_1 = mean(yi_1) - a1_1 * mean(xi_1);
 plot(xi_1, yi_1, 'o') % Gráfico de dispersão
 hold on
 plot(xi_1, a1_1 * xi_1 + a0_1, 'r') % Plota a reta de regressão em vermelho
-xlim([0, max(xi_1) * 1.1]) % Ajuste do limite no eixo x
-ylim([0, max(yi_1) * 1.1]) % Ajuste do limite no eixo y
+xlim([0, max(xi_1) * 1.1]) % Ajuste do limite no eixo x (margem 10%)
+ylim([0, max(yi_1) * 1.1]) % Ajuste do limite no eixo y (margem 10%)
 xlabel('Quantidade de Linfócito')
 ylabel('Quantidade de Neutrófilo')
 title('Regressão Linear de Linfócitos vs Neutrófilos')
