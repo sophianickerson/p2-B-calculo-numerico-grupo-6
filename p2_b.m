@@ -127,6 +127,9 @@ s_y_2 = sqrt(St_2 / (n_2 - 1));  % Desvio padrão de yi
 % Exibir resultados da análise
 fprintf('\n===== ANÁLISE 1: SELEÇÃO DAS VARIÁVEIS =====\n');
 
+fprintf('\n--- 1.1 ---\n');
+fprintf('Essas duas duplas (Linfócitos vs. Neutrófilos e Plaquetas vs. Dias Hospitalizado) foram escolhidas pela observação de uma distribuição com padrões lineares visíveis. Isso é indicativo de que esses pares podem apresentar um ajuste razoável para a regressão linear, com os dados distribuídos de forma a sugerir uma relação direta entre as variáveis. Essa análise inicial ajuda a justificar a escolha antes de partir para o cálculo de regressão linear. Linfócitos vs. Neutrófilos: Na análise gráfica, observamos que há uma relação visualmente mais próxima de linearidade entre as variáveis "Linfócitos" e "Neutrófilos". Esses dois parâmetros sanguíneos estão relacionados entre si na resposta inflamatória e no sistema imunológico, o que é frequentemente esperado em pacientes com doenças infecciosas como a COVID-19. O gráfico de dispersão entre essas variáveis mostra uma tendência de variação conjunta, sugerindo que podem ser bons candidatos para a regressão linear. Plaquetas vs. Dias Hospitalizado: Outro par com uma tendência linear notável é o de "Plaquetas" e "Dias Hospitalizado". A contagem de plaquetas e a duração da internação podem ter uma correlação relacionada à gravidade do quadro clínico. Pacientes com contagens de plaquetas alteradas podem apresentar diferentes tempos de recuperação, refletindo na duração da hospitalização. A relação, apesar de não ser tão forte quanto o primeiro par, ainda sugere uma tendência que pode ser modelada por regressão linear.\n')
+
 % Resultados para Linfócitos vs Neutrófilos
 fprintf('\n--- Resultados da Regressão Linear: Linfócitos vs Neutrófilos ---\n');
 fprintf('  Coeficiente a0               = %10.4f\n', a0_1);
@@ -495,7 +498,7 @@ for i = 1:length(age_groups)
     xticks([0 1]);
 end
 
-# CONSIDERAÇÕES FINAIS: Anlisando os coeficientes de correlação da regressão linear e multipla, fica claro que quase não há relação entre a taxa de mortalidade e a quantidade de células sanguíneas por paciente
+# CONSIDERAÇÕES FINAIS: Anlisando os coeficientes de correlação da regressão polinomial e multipla, fica claro que quase não há relação entre a taxa de mortalidade e a quantidade de células sanguíneas por paciente
 # OBS: para melhor visualização, gostaria de ter feito gráficos de violino, entretanto encontrei dificuldades de instalar essa função para o octave, logo me limitei a gráficos lineares e de barra.
 
 % Análise 3
@@ -536,7 +539,7 @@ function [Sr, r2, Sy_x, S_y] = calcular_metricas(y_true, y_pred)
     St = sum((y_true - mean(y_true)).^2);
     r2 = 1 - (Sr / St);
     Sy_x = sqrt(Sr / (length(y_true) - 2));
-    S_y = sqrt(St/(length(y_true) -1))
+    S_y = sqrt(St/(length(y_true) -1));
 end
 
 % Calcular métricas para o Modelo 1
