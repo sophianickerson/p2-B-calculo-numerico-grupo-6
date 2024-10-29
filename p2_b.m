@@ -451,48 +451,69 @@ end
 %3.2. Implementando um terceiro modelo de regressão linear que combine as duas anteriores
 
 % Carregar os dados
-data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorando cabeçalho
-dias_hospitalizados = data(:, 11); % Coluna de dias hospitalizados
+data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorar cabeçalho
+y = data(:, 11); % Variável dependente: dias hospitalizados
+x1 = data(:, 9); % Variável independente 1: contagem de linfócitos
+x2 = data(:, 10); % Variável independente 2: contagem de neutrófilos
 
-% Selecionar variáveis independentes
-x1 = data(:, 9); % Contagem de linfócitos
-x2 = data(:, 10); % Contagem de neutrófilos
+% Calcular os termos necessários para montar o sistema linear
+n = length(y);
+Sx1 = sum(x1);
+Sx2 = sum(x2);
+Sy = sum(y);
+Sx1x1 = sum(x1 .^ 2);
+Sx2x2 = sum(x2 .^ 2);
+Sx1x2 = sum(x1 .* x2);
+Sx1y = sum(x1 .* y);
+Sx2y = sum(x2 .* y);
 
-% Modelo 3: Regressão linear múltipla y3 = a0,3 + a1,3 * x1 + a2,3 * x2
-function [a0, a1, a2] = regressao_linear_multipla(x1, x2, y)
+% Montar a matriz do sistema [X] e o vetor [y]
+X = [
+    n, Sx1, Sx2;
+    Sx1, Sx1x1, Sx1x2;
+    Sx2, Sx1x2, Sx2x2
+];
 
-    % Montando a matriz de design com uma coluna de 1's para o termo independente
-    X = [ones(length(x1), 1), x1, x2];
+Y = [Sy; Sx1y; Sx2y];
 
-    % Resolvendo para os coeficientes usando a pseudo-inversa
-    a = pinv(X' * X) * X' * y;
-    a0 = a(1);
-    a1 = a(2);
-    a2 = a(3);
+% Realizar a eliminação de Gauss para transformar X em uma matriz triangular superior
+for i = 1:size(X, 1)
+    % Normalizar a linha atual
+    X(i, :) = X(i, :) / X(i, i);
+    Y(i) = Y(i) / X(i, i);
+
+    % Eliminar as entradas abaixo da diagonal na coluna atual
+    for j = i+1:size(X, 1)
+        factor = X(j, i);
+        X(j, :) = X(j, :) - factor * X(i, :);
+        Y(j) = Y(j) - factor * Y(i);
+    end
 end
 
-% Calcular os coeficientes para o Modelo 3
-[a0_3, a1_3, a2_3] = regressao_linear_multipla(x1, x2, dias_hospitalizados);
-y3_pred = a0_3 + a1_3 * x1 + a2_3 * x2;
-
-% Função para calcular Sr, r^2 e Sy/x (já implementada)
-function [Sr, r2, Sy_x] = calcular_metricas(y_true, y_pred)
-    Sr = sum((y_true - y_pred).^2);
-    St = sum((y_true - mean(y_true)).^2);
-    r2 = 1 - (Sr / St);
-    Sy_x = sqrt(Sr / (length(y_true) - 2));
+% Substituição para trás para resolver o sistema
+a = zeros(size(Y));
+for i = size(X, 1):-1:1
+    a(i) = Y(i) - X(i, i+1:end) * a(i+1:end);
 end
 
-% Calcular métricas para o Modelo 3
-[Sr3, r2_3, Sy_x3] = calcular_metricas(dias_hospitalizados, y3_pred);
+% Extrair os coeficientes
+a0 = a(1);
+a1 = a(2);
+a2 = a(3);
 
-% Exibir resultados do Modelo 3
-fprintf('Modelo 3 (y3 = a0,3 + a1,3 * x1 + a2,3 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr3, r2_3, Sy_x3);
+% Previsão com o modelo ajustado
+y_pred = a0 + a1 * x1 + a2 * x2;
 
-% Comparação dos modelos
-if r2_3 > max([r2_1, r2_2])
-    fprintf('O Modelo 3 é o melhor com base em r^2.\n');
-  elseif r2_1 > r2_2
+% Calcular Sr, r² e Sy/x para o modelo ajustado
+Sr = sum((y - y_pred).^2);
+St = sum((y - mean(y)).^2);
+r2 = 1 - (Sr / St);
+Sy_x = sqrt(Sr / (n - 3));
+
+% Exibir os resultados do modelo ajustado
+fprintf('Modelo de regressão múltipla (usando Eliminação de Gauss): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr, r2, Sy_x);
+
+
     fprintf('O Modelo 1 ainda é melhor com base em r^2.\n');
   else
     fprintf('O Modelo 2 ainda é melhor com base em r^2.\n');
