@@ -165,6 +165,8 @@ if r2_2 > r2_1
  end
  fprintf('=============================================\n');
 
+ fprintf('\n===== ANÁLISE 2: COMPARAÇÃO ESTATÍSTICA DAS MÉTRICAS =====\n');
+
 ### 2.1 
 # Primeiramente, tinha-se o objetivo de comparar diferentes faixas etárias à quantidade de células sanguíneas do paciente.
 # Para isso, comparou-se a média de leucócitos, linfócitos e neutrófilos em 3 faixas etárias (0-40, 40-60 e 60+) anos.
