@@ -347,9 +347,9 @@ for i = 1:length(age_groups)
     subplot(3, 1, i);
     bar([0, 1], bar_data);
 
-    title(['Outcome - Age Group ' group_labels{i}]);
-    xlabel('Outcome (0: Not Recovered, 1: Recovered)');
-    ylabel('Frequency');
+    title(['Outcome - Faixa Etária ' group_labels{i}]);
+    xlabel('Outcome (0: Não Recuperado, 1: Recuperado)');
+    ylabel('Frequência');
     xticks([0 1]);
 end
 
