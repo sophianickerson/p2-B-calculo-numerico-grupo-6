@@ -148,7 +148,7 @@ if s_yx_2 < s_y_2
 end
 
 fprintf('Comparação entre os dois modelos de regressão\n')
-if s_yx_1 > s_yx_2
+if r2_2 > r2_1
   fprintf('O modelo de regressão de Plaqueta vs Dias Hospitalizado é melhor que o moedelo de regressão de Linfócitos vs Neutrófilos!\n')
   else
     fprintf('O modelo de regressão de Linfócitos vs Neutrófilos é melhor que o moedelo de regressão de Plaqueta vs Dias Hospitalizado!\n')
