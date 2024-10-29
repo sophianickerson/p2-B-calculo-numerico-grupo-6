@@ -108,8 +108,8 @@ a0_2 = mean(yi_2) - a1_2 * mean(xi_2);
 plot(xi_2, yi_2, 'o') % Gráfico de dispersão
 hold on
 plot(xi_2, a1_2 * xi_2 + a0_2, 'r') % Plota a reta de regressão em vermelho
-xlim([0, max(xi_2) * 1.1]) % Ajuste do limite no eixo x
-ylim([0, max(yi_2) * 1.1]) % Ajuste do limite no eixo y
+xlim([0, max(xi_2) * 1.1]) % Ajuste do limite no eixo x (margem 10%)
+ylim([0, max(yi_2) * 1.1]) % Ajuste do limite no eixo y (margem 10%)
 xlabel('Quantidade de Plaqueta')
 ylabel('Dias Hospitalizado')
 title('Regressão Linear de Plaqueta vs Dias Hospitalizado')
