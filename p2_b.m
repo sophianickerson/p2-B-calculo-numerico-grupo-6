@@ -165,7 +165,7 @@ if r2_2 > r2_1
  end
  fprintf('=============================================\n');
 
- fprintf('\n===== ANÁLISE 2: COMPARAÇÃO ESTATÍSTICA DAS MÉTRICAS =====\n');
+fprintf('\n===== ANÁLISE 2: COMPARAÇÃO ESTATÍSTICA DAS MÉTRICAS =====\n');
 
 ### 2.1 
 # Primeiramente, tinha-se o objetivo de comparar diferentes faixas etárias à quantidade de células sanguíneas do paciente.
