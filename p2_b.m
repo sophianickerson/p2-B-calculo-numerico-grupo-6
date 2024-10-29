@@ -38,23 +38,6 @@ end
 ### Essas duas duplas (Linfócitos vs. Neutrófilos e Plaquetas vs. Dias Hospitalizado) foram escolhidas pela observação de uma distribuição com padrões lineares visíveis. Isso é indicativo de que esses pares podem apresentar um ajuste razoável para a regressão linear, com os dados distribuídos de forma a sugerir uma relação direta entre as variáveis. Essa análise inicial ajuda a justificar a escolha antes de partir para o cálculo de regressão linear. Linfócitos vs. Neutrófilos: Na análise gráfica, observamos que há uma relação visualmente mais próxima de linearidade entre as variáveis "Linfócitos" e "Neutrófilos". Esses dois parâmetros sanguíneos estão relacionados entre si na resposta inflamatória e no sistema imunológico, o que é frequentemente esperado em pacientes com doenças infecciosas como a COVID-19. O gráfico de dispersão entre essas variáveis mostra uma tendência de variação conjunta, sugerindo que podem ser bons candidatos para a regressão linear. Plaquetas vs. Dias Hospitalizado: Outro par com uma tendência linear notável é o de "Plaquetas" e "Dias Hospitalizado". A contagem de plaquetas e a duração da internação podem ter uma correlação relacionada à gravidade do quadro clínico. Pacientes com contagens de plaquetas alteradas podem apresentar diferentes tempos de recuperação, refletindo na duração da hospitalização. A relação, apesar de não ser tão forte quanto o primeiro par, ainda sugere uma tendência que pode ser modelada por regressão linear.
 ### 1.2
 
-clear all
-close all
-clc
-
-% Nomes das colunas para referência
-columns_names = {'Outcome', 'Patient Age', 'Gender', ...
-                 'Ventilated (Y/N)', 'Red blood cell distribution width', ...
-                 'Monocytes(%)', 'White blood cell count', ...
-                 'Platelet Count', 'Lymphocyte Count', ...
-                 'Neutrophils Count', 'Days Hospitalized'};
-
-% Leitura dos dados
-data = csvread('COVID-19_CBC_Data_cleaned.csv');
-
-% Removendo a primeira linha que contém strings dos títulos
-data(1, :) = [];
-
 % Seleção do par de variáveis "Lymphocyte Count" (coluna 9) e "Neutrophils Count" (coluna 10)
 xi_1 = data(:, 9); % Lymphocyte Count
 yi_1 = data(:, 10); % Neutrophils Count
