@@ -425,7 +425,7 @@ dias_hospitalizados = data(:, 11); % Coluna de dias hospitalizados
 
 % Selecionando variáveis independentes (ajustável conforme as variáveis mais correlacionadas)
 x1 = data(:, 8); % Contagem de plaqueta
-x2 = data(:, 10); % Contagem de neutrófilos
+x2 = data(:, 2); % Contagem de neutrófilos
 
 % Função para calcular os coeficientes de um modelo linear simples y = a0 + a1*x
 function [a0, a1] = regressao_linear(x, y)
@@ -461,20 +461,31 @@ end
 
 % Exibindo os resultados
 fprintf('\n===== ANÁLISE 3: PREDIÇÃO =====\n');
-fprintf('Modelo 1 (y1 = a0,1 + a1,1 * x1): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr1, r2_1, Sy_x1, S_y1);
-fprintf('Modelo 2 (y2 = a0,2 + a1,2 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr2, r2_2, Sy_x2, S_y2);
+fprintf('\n--- Modelo 1: Plaqueta por Dias Hospitalizado ---\n');
+fprintf('(y1 = a0,1 + a1,1 * x1): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr1, r2_1, Sy_x1, S_y1);
 
-% Comparando as métricas de cada modelo com base em Sy/x e Sy
+% Comparando as métricas do modelo 1 com base em Sy/x e Sy
 
 if Sy_x1 < S_y1
-  fprintf('O modelo apresenta boa correlação. (Sy/x < Sy)\n');
+  fprintf('O modelo 1 apresenta boa correlação. (Sy/x < Sy)\n');
 else
-  fprintf('O modelo não apresenta boa correlação. (Sy/x < Sy)\n');
+  fprintf('O modelo 1 não apresenta boa correlação. (Sy/x < Sy)\n');
 end
 
+fprintf('\n--- Modelo 2: Idade do Paciente por Dias Hospitalizado ---\n');
+fprintf('(y2 = a0,2 + a1,2 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr2, r2_2, Sy_x2, S_y2);
+
+% Comparando as métricas do modelo 2 com base em Sy/x e Sy
+
+if Sy_x2 < S_y2
+  fprintf('O modelo 2 apresenta boa correlação. (Sy/x < Sy)\n');
+else
+  fprintf('O modelo 2 não apresenta boa correlação. (Sy/x < Sy)\n');
+end
 
 % Comparando os modelos com base no r2
-if r2_1 > r2_2 
+fprintf('\n--- Comparação entre o modelos ---\n');
+if r2_1 > r2_2
   fprintf('O Modelo 1 é melhor com base em r^2.\n');
   elseif r2_2 > r2_1
     fprintf('O Modelo 2 é melhor com base em r^2.\n');
@@ -494,62 +505,69 @@ end
 data = csvread('COVID-19_CBC_Data_cleaned.csv', 1, 0); % Ignorar cabeçalho
 y = data(:, 11); % Variável dependente: dias hospitalizados
 x1 = data(:, 8); % Variável independente 1: contagem de plaquetas
-x2 = data(:, 10); % Variável independente 2: contagem de neutrófilos
+x2 = data(:, 2); % Variável independente 2: idade do paciente
 
-% Calcular os termos necessários para montar o sistema linear
-n = length(y);
-Sx1 = sum(x1);
-Sx2 = sum(x2);
-Sy = sum(y);
-Sx1x1 = sum(x1 .^ 2);
-Sx2x2 = sum(x2 .^ 2);
-Sx1x2 = sum(x1 .* x2);
-Sx1y = sum(x1 .* y);
-Sx2y = sum(x2 .* y);
+% Regressão linear múltipla usando decomposição LU
+% para prever dias hospitalizados com as variáveis independentes x1 e x2.
 
-% Montar a matriz do sistema [X] e o vetor [y]
-X = [
-    n, Sx1, Sx2;
-    Sx1, Sx1x1, Sx1x2;
-    Sx2, Sx1x2, Sx2x2
-];
+% Função de regressão linear múltipla usando decomposição LU
+function [a0, a1, a2] = regressao_linear_multipla(x1, x2, y)
+    % Montando a matriz de design com uma coluna de 1's para o intercepto
+    X = [ones(length(x1), 1), x1, x2];
 
-Y = [Sy; Sx1y; Sx2y];
+    % Calculando XtX e XtY para o sistema linear
+    XtX = X' * X;
+    XtY = X' * y;
 
-% Realizar a eliminação de Gauss para transformar X em uma matriz triangular superior
-for i = 1:size(X, 1)
-    % Normalizar a linha atual
-    X(i, :) = X(i, :) / X(i, i);
-    Y(i) = Y(i) / X(i, i);
+    % Decomposição LU para resolver XtX * a = XtY
+    [L, U] = lu(XtX);
 
-    % Eliminar as entradas abaixo da diagonal na coluna atual
-    for j = i+1:size(X, 1)
-        factor = X(j, i);
-        X(j, :) = X(j, :) - factor * X(i, :);
-        Y(j) = Y(j) - factor * Y(i);
+    % Resolvendo Lz = XtY para z usando uma função customizada
+    z = resolver_sistema(L, XtY);
+
+    % Resolvendo Ua = z para os coeficientes a
+    a = resolver_sistema(U, z);
+
+    % Atribuindo coeficientes a0, a1, e a2
+    a0 = a(1);
+    a1 = a(2);
+    a2 = a(3);
+end
+
+% Função customizada para resolver sistemas lineares usando L e U
+function x = resolver_sistema(M, b)
+    x = zeros(size(b));
+    n = length(b);
+
+    % Resolver triangular inferior (L)
+    if isdiag(tril(M))
+        for i = 1:n
+            x(i) = (b(i) - M(i, 1:i-1) * x(1:i-1)) / M(i, i);
+        end
+    % Resolver triangular superior (U)
+    elseif isdiag(triu(M))
+        for i = n:-1:1
+            x(i) = (b(i) - M(i, i+1:end) * x(i+1:end)) / M(i, i);
+        end
     end
 end
 
-% Substituição para trás para resolver o sistema
-a = zeros(size(Y));
-for i = size(X, 1):-1:1
-    a(i) = Y(i) - X(i, i+1:end) * a(i+1:end);
+% Calcular os coeficientes para o modelo de regressão múltipla
+[a0_3, a1_3, a2_3] = regressao_linear_multipla(x1, x2, dias_hospitalizados);
+y3_pred = a0_3 + a1_3 * x1 + a2_3 * x2;
+
+% Calcular métricas para o modelo de regressão múltipla (Modelo 3)
+[Sr3, r2_3, Sy_x3] = calcular_metricas(dias_hospitalizados, y3_pred);
+
+% Exibir resultados do Modelo 3
+fprintf('\n--- Modelo 2: Plaqueta + Idade do Paciente por Dias Hospitalizado ---\n');
+fprintf('(y3 = a0,3 + a1,3 * x1 + a2,3 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr3, r2_3, Sy_x3);
+
+% Comparação final dos modelos com base no r²
+if r2_3 > max([r2_1, r2_2])
+    fprintf('O Modelo 3 é o melhor com base em r^2.\n');
+elseif r2_1 > r2_2
+    fprintf('O Modelo 1 ainda é melhor com base em r^2.\n');
+else
+    fprintf('O Modelo 2 ainda é melhor com base em r^2.\n');
 end
-
-% Extrair os coeficientes
-a0 = a(1);
-a1 = a(2);
-a2 = a(3);
-
-% Previsão com o modelo ajustado
-y_pred = a0 + a1 * x1 + a2 * x2;
-
-% Calcular Sr, r² e Sy/x para o modelo ajustado
-Sr = sum((y - y_pred).^2);
-St = sum((y - mean(y)).^2);
-r2 = 1 - (Sr / St);
-Sy_x = sqrt(Sr / (n - 3));
-
-% Exibir os resultados do modelo ajustado
-fprintf('Modelo de regressão múltipla (usando Eliminação de Gauss): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f\n', Sr, r2, Sy_x);
-
