@@ -124,35 +124,43 @@ r2_2 = (St_2 - Sr_2) / St_2;  % Coeficiente de determinação R²
 s_yx_2 = sqrt(Sr_2 / (n_2 - 2));  % Erro padrão da estimativa
 s_y_2 = sqrt(St_2 / (n_2 - 1));  % Desvio padrão de yi
 
-% Exibir resultados
-fprintf('Resultados das análises numéricas pra Regressão Linear de Linfócitos vs Neutrófilos\n')
-fprintf('Coeficientes da regressão: a0 = %.4f, a1 = %.4f\n', a0_1, a1_1);
-fprintf('Coeficiente de determinação R²: %.4f\n', r2_1);
-fprintf('Erro padrão da estimativa (s_yx): %.4f\n', s_yx_1);
-fprintf('Desvio padrão de yi (s_y): %.4f\n', s_y_1);
+% Exibir resultados da análise
+fprintf('\n===== ANÁLISE 1: SELEÇÃO DAS VARIÁVEIS =====\n');
+
+% Resultados para Linfócitos vs Neutrófilos
+fprintf('\n--- Resultados da Regressão Linear: Linfócitos vs Neutrófilos ---\n');
+fprintf('  Coeficiente a0               = %10.4f\n', a0_1);
+fprintf('  Coeficiente a1               = %10.4f\n', a1_1);
+fprintf('  Coeficiente de determinação (R²) = %10.4f\n', r2_1);
+fprintf('  Erro padrão da estimativa (s_yx) = %10.4f\n', s_yx_1);
+fprintf('  Desvio padrão de yi (s_y)    = %10.4f\n', s_y_1);
 if s_yx_1 < s_y_1
-  fprintf('O modelo de regressão é bom!\n')
-  else
-    fprint('O modelo de regressão não é bom\n')
+    fprintf('  >> O modelo de regressão é bom!\n');
+else
+    fprintf('  >> O modelo de regressão não é bom\n');
 end
 
-fprintf('Resultados das análises numéricas pra Regressão Linear de Plaqueta vs Dias Hospitalizado\n')
-fprintf('Coeficientes da regressão: a0 = %.4f, a1 = %.4f\n', a0_2, a1_2);
-fprintf('Coeficiente de determinação R²: %.4f\n', r2_2);
-fprintf('Erro padrão da estimativa (s_yx): %.4f\n', s_yx_2);
-fprintf('Desvio padrão de yi (s_y): %.4f\n', s_y_2);
+% Resultados para Plaquetas vs Dias Hospitalizado
+fprintf('\n--- Resultados da Regressão Linear: Plaquetas vs Dias Hospitalizado ---\n');
+fprintf('  Coeficiente a0               = %10.4f\n', a0_2);
+fprintf('  Coeficiente a1               = %10.4f\n', a1_2);
+fprintf('  Coeficiente de determinação (R²) = %10.4f\n', r2_2);
+fprintf('  Erro padrão da estimativa (s_yx) = %10.4f\n', s_yx_2);
+fprintf('  Desvio padrão de yi (s_y)    = %10.4f\n', s_y_2);
 if s_yx_2 < s_y_2
-  fprintf('O modelo de regressão é bom!\n')
-  else
-    fprint('O modelo de regressão não é bom\n')
+    fprintf('  >> O modelo de regressão é bom!\n');
+else
+    fprintf('  >> O modelo de regressão não é bom\n');
 end
 
-fprintf('Comparação entre os dois modelos de regressão\n')
+% Comparação entre os modelos
+fprintf('\n--- Comparação entre os Modelos ---\n');
 if r2_2 > r2_1
-  fprintf('O modelo de regressão de Plaqueta vs Dias Hospitalizado é melhor que o moedelo de regressão de Linfócitos vs Neutrófilos!\n')
+  fprintf('>> O modelo de regressão de Plaquetas vs Dias Hospitalizado é melhor que o modelo de Linfócitos vs Neutrófilos!\n')
   else
-    fprintf('O modelo de regressão de Linfócitos vs Neutrófilos é melhor que o moedelo de regressão de Plaqueta vs Dias Hospitalizado!\n')
+    fprintf('>> O modelo de regressão de Linfócitos vs Neutrófilos é melhor que o modelo de Plaquetas vs Dias Hospitalizado!\n')
  end
+ fprintf('=============================================\n');
 
 ### 2.1 
 # Primeiramente, tinha-se o objetivo de comparar diferentes faixas etárias à quantidade de células sanguíneas do paciente.
@@ -184,6 +192,8 @@ beta1 = numerator_beta1 / denominator_beta1;
 beta0 = y_mean - beta1 * x_mean;
 
 % Resultados da regressão leucócitos
+fprintf('\n===== ANÁLISE 2: COMPARAÇÃO ESTATÍSTICA DAS MÉTRICAS =====\n');
+fprintf('\n--- Resultados da regressão leucócitos ---\n');
 fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
 
 % Valores preditos (y_hat) usando a equação de regressão
@@ -217,6 +227,7 @@ beta1 = numerator_beta1 / denominator_beta1;
 beta0 = y_mean - beta1 * x_mean;
 
 # resultados da regressão linfócitos
+fprintf('\n--- Resultados da regressão linfócitos ---\n');
 fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
 
 % Valores preditos (y_hat) usando a equação de regressão
@@ -250,6 +261,7 @@ beta1 = numerator_beta1 / denominator_beta1;
 beta0 = y_mean - beta1 * x_mean;
 
 # resultados da regressão neutrófilos
+fprintf('\n--- Resultados da regressão neutrófilos ---\n');
 fprintf("Equação da regressão linear: y = %.4f + %.4f * x\n", beta0, beta1);
 
 % Valores preditos (y_hat) usando a equação de regressão
@@ -404,6 +416,7 @@ end
 [Sr2, r2_2, Sy_x2, S_y2] = calcular_metricas(dias_hospitalizados, y2_pred);
 
 % Exibindo os resultados
+fprintf('\n===== ANÁLISE 3: PREDIÇÃO =====\n');
 fprintf('Modelo 1 (y1 = a0,1 + a1,1 * x1): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr1, r2_1, Sy_x1, S_y1);
 fprintf('Modelo 2 (y2 = a0,2 + a1,2 * x2): Sr = %.2f, r^2 = %.2f, Sy/x = %.2f, Sy = %2f\n', Sr2, r2_2, Sy_x2, S_y2);
 
